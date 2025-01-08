@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: auth-service
+  config:
+    import: optional:configserver:http://localhost:7090
+#  security:
+#    user:
+#      name: balaji
+#      password: password
+#  neo4j:
+#    uri: bolt://localhost:7688
+#    authentication:
+#      username: neo4j
+#      password: password
+#  data:
+#    neo4j:
+#      database: sapphire-auth
+
