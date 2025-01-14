@@ -4,13 +4,18 @@ import com.brihaspathee.sapphire.domain.entity.Authority;
 import com.brihaspathee.sapphire.domain.entity.Role;
 import com.brihaspathee.sapphire.domain.entity.User;
 import com.brihaspathee.sapphire.domain.repository.UserRepository;
+import com.brihaspathee.sapphire.mapper.interfaces.UserMapper;
+import com.brihaspathee.sapphire.model.UserDto;
+import com.brihaspathee.sapphire.model.UserList;
 import com.brihaspathee.sapphire.services.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created in Intellij IDEA
@@ -32,23 +37,33 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     /**
+     * The user mapper instance
+     */
+    private final UserMapper userMapper;
+
+    /**
      * Gwt all the users in the system
      */
     @Override
-    public void getAllUsers() {
+    public UserList getAllUsers() {
         log.info("Get all users inside the service method");
+        UserList userList = UserList.builder().build();
         List<User> users = userRepository.findAll();
-        for (User user : users) {
-            log.info(user.getUsername());
-            Set<Role> roles = user.getRoles();
-            for (Role role : roles) {
-                log.info(role.getRoleName());
-                Set<Authority> authorities = role.getAuthorities();
-                for (Authority authority : authorities) {
-                    log.info("Permission: {}", authority.getPermission());
-                }
-            }
+        if(!users.isEmpty()) {
+            userList.setUsers(userMapper.toUserDtoSet(new HashSet<>(users)));
         }
+//        for (User user : users) {
+//            log.info(user.getUsername());
+//            Set<Role> roles = user.getRoles();
+//            for (Role role : roles) {
+//                log.info(role.getRoleName());
+//                Set<Authority> authorities = role.getAuthorities();
+//                for (Authority authority : authorities) {
+//                    log.info("Permission: {}", authority.getPermission());
+//                }
+//            }
+//        }
+        return userList;
 
     }
 }

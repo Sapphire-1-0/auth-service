@@ -1,5 +1,9 @@
 package com.brihaspathee.sapphire.model;
 
+import lombok.*;
+
+import java.util.Set;
+
 /**
  * Created in Intellij IDEA
  * User: Balaji Varadharajan
@@ -9,5 +13,15 @@ package com.brihaspathee.sapphire.model;
  * Package Name: com.brihaspathee.sapphire.model
  * To change this template use File | Settings | File and Code Template
  */
+@Setter
+@Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserList {
+
+    /**
+     * Set of users
+     */
+    private Set<UserDto> users;
 }

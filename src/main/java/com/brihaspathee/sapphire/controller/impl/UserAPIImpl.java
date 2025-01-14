@@ -34,7 +34,7 @@ public class UserAPIImpl implements UserAPI {
     @Override
     public ResponseEntity<UserList> getAllUsers() {
         log.info("Get all users");
-        userService.getAllUsers();
-        return null;
+        UserList userList = userService.getAllUsers();
+        return ResponseEntity.ok(userList);
     }
 }

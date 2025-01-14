@@ -1,5 +1,7 @@
 package com.brihaspathee.sapphire.services.interfaces;
 
+import com.brihaspathee.sapphire.model.UserList;
+
 /**
  * Created in Intellij IDEA
  * User: Balaji Varadharajan
@@ -11,5 +13,5 @@ package com.brihaspathee.sapphire.services.interfaces;
  */
 public interface UserService {
 
-    void getAllUsers();
+    UserList getAllUsers();
 }
