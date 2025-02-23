@@ -1,8 +1,8 @@
 package com.brihaspathee.sapphire.mapper.impl;
 
 import com.brihaspathee.sapphire.domain.entity.Authority;
+import com.brihaspathee.sapphire.dto.auth.AuthorityDto;
 import com.brihaspathee.sapphire.mapper.interfaces.AuthorityMapper;
-import com.brihaspathee.sapphire.model.AuthorityDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

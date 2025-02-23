@@ -49,6 +49,22 @@ public class User implements UserDetails {
     private String password;
 
     /**
+     * Represents the unique identifier for the service associated with the user.
+     * This field typically links the user to a specific service instance or
+     * operational context within the application.
+     */
+    @Property(name = "serviceId")
+    private String serviceId;
+
+    /**
+     * Represents the type of the account associated with the user.
+     * It may categorize the user account based on specific roles,
+     * privileges, or operational distinctions.
+     */
+    @Property(name = "accountType")
+    private String accountType;
+
+    /**
      * Indicates if the account is expired
      */
     @Property(name = "accountNotExpired")

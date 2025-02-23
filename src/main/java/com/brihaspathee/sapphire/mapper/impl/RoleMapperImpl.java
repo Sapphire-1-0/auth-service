@@ -2,10 +2,10 @@ package com.brihaspathee.sapphire.mapper.impl;
 
 import com.brihaspathee.sapphire.domain.entity.Authority;
 import com.brihaspathee.sapphire.domain.entity.Role;
+import com.brihaspathee.sapphire.dto.auth.AuthorityDto;
+import com.brihaspathee.sapphire.dto.auth.RoleDto;
 import com.brihaspathee.sapphire.mapper.interfaces.AuthorityMapper;
 import com.brihaspathee.sapphire.mapper.interfaces.RoleMapper;
-import com.brihaspathee.sapphire.model.AuthorityDto;
-import com.brihaspathee.sapphire.model.RoleDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

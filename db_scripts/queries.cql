@@ -70,6 +70,27 @@ CREATE (a:Authority {authorityId:newValue, permission:"user.delete"})
 CREATE (c)-[:GENERATED]->(a)
 RETURN a,c;
 
+Match (c:Counter {name:"authorityIdCounter"})
+with c, c.value + 1 as newValue
+SET c.value = newValue
+CREATE (a:Authority {authorityId:newValue, permission:"account.read"})
+CREATE (c)-[:GENERATED]->(a)
+RETURN a,c;
+
+Match (c:Counter {name:"authorityIdCounter"})
+with c, c.value + 1 as newValue
+SET c.value = newValue
+CREATE (a:Authority {authorityId:newValue, permission:"account.write"})
+CREATE (c)-[:GENERATED]->(a)
+RETURN a,c;
+
+Match (c:Counter {name:"authorityIdCounter"})
+with c, c.value + 1 as newValue
+SET c.value = newValue
+CREATE (a:Authority {authorityId:newValue, permission:"account.delete"})
+CREATE (c)-[:GENERATED]->(a)
+RETURN a,c;
+
 -- Role Node creation Cyphers
 //Create Role node
 Match (c:Counter {name:"roleIdCounter"})
@@ -131,6 +152,15 @@ create (r)-[:HAS_AUTHORITY]->(uw)
 create (r)-[:HAS_AUTHORITY]->(ud)
 return r, ur, uw, ud;
 
+match (r:Role{roleName:"admin"})
+match (ur:Authority{permission:"account.read"})
+match (uw:Authority{permission:"account.write"})
+match (ud:Authority{permission:"account.delete"})
+create (r)-[:HAS_AUTHORITY]->(ur)
+create (r)-[:HAS_AUTHORITY]->(uw)
+create (r)-[:HAS_AUTHORITY]->(ud)
+return r, ur, uw, ud;
+
 match (r:Role{roleName:"customer-specialist"})
 match (ur:Authority{permission:"user.read"})
 match (uw:Authority{permission:"role.read"})
@@ -138,6 +168,11 @@ match (ud:Authority{permission:"authority.read"})
 create (r)-[:HAS_AUTHORITY]->(ur)
 create (r)-[:HAS_AUTHORITY]->(uw)
 create (r)-[:HAS_AUTHORITY]->(ud)
+return r, ur, uw, ud;
+
+match (r:Role{roleName:"customer-specialist"})
+match (ur:Authority{permission:"account.read"})
+create (r)-[:HAS_AUTHORITY]->(ur)
 return r, ur, uw, ud;
 
 -- User Role Relationship Cypher

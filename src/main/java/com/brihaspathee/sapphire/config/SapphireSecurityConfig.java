@@ -1,13 +1,16 @@
 package com.brihaspathee.sapphire.config;
 
 import com.brihaspathee.sapphire.auth.SapphireUserDetailsService;
+import com.brihaspathee.sapphire.auth.filter.SapphireAuthenticationFilter;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -16,6 +19,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  * Created in Intellij IDEA
@@ -36,8 +40,27 @@ public class SapphireSecurityConfig {
      */
     private final SapphireUserDetailsService sapphireUserDetailsService;
 
-    public SapphireSecurityConfig(SapphireUserDetailsService sapphireUserDetailsService) {
+    /**
+     * The `sapphireAuthenticationFilter` is an instance of the `SapphireAuthenticationFilter` class.
+     * It acts as a custom security filter for handling JWT-based authentication in the security configuration.
+     * This filter intercepts incoming HTTP requests, validates the JWT token provided in the Authorization header,
+     * and sets the appropriate authentication details in the Spring Security context.
+     *
+     * Key Responsibilities:
+     * - Extract & validate JWT tokens from incoming requests.
+     * - Load user details using*/
+    private final SapphireAuthenticationFilter sapphireAuthenticationFilter;
+
+    /**
+     * Constructs a new instance of SapphireSecurityConfig.
+     *
+     * @param sapphireUserDetailsService the service responsible for loading user details by username, typically for authentication-related operations.
+     * @param sapphireAuthenticationFilter the custom filter used for processing and validating authentication requests, such as handling JWT tokens.
+     */
+    public SapphireSecurityConfig(SapphireUserDetailsService sapphireUserDetailsService,
+                                  SapphireAuthenticationFilter sapphireAuthenticationFilter) {
         this.sapphireUserDetailsService = sapphireUserDetailsService;
+        this.sapphireAuthenticationFilter = sapphireAuthenticationFilter;
     }
 
     /**
@@ -53,6 +76,7 @@ public class SapphireSecurityConfig {
             "/host",
             "/swagger-ui.html",
             "/v3/api-docs.yaml",
+            "/api/v1/sapphire/auth/public/**",
             // other public endpoints of your API may be appended to this array
 //            "/sapphire/jwt/authenticate",
 //            "/api/v1/sapphire/welcome",
@@ -75,13 +99,14 @@ public class SapphireSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(AUTH_WHITELIST).permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .anyRequest().authenticated())
+                        .anyRequest().authenticated());
 //                .authorizeHttpRequests(auth -> auth.requestMatchers(AUTH_WHITELIST)
 //                        .authenticated()
 //                        .anyRequest()
 //                        .permitAll())
-                .userDetailsService(sapphireUserDetailsService)
-                .httpBasic(Customizer.withDefaults());
+//                .userDetailsService(sapphireUserDetailsService);
+//                .httpBasic(Customizer.withDefaults());
+        http.addFilterBefore(sapphireAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
@@ -92,5 +117,10 @@ public class SapphireSecurityConfig {
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    protected AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
     }
 }

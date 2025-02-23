@@ -1,5 +1,6 @@
 package com.brihaspathee.sapphire.model;
 
+import com.brihaspathee.sapphire.dto.auth.UserDto;
 import lombok.*;
 
 import java.util.Set;

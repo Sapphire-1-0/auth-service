@@ -1,11 +1,8 @@
 package com.brihaspathee.sapphire.services.impl;
 
-import com.brihaspathee.sapphire.domain.entity.Authority;
-import com.brihaspathee.sapphire.domain.entity.Role;
 import com.brihaspathee.sapphire.domain.entity.User;
 import com.brihaspathee.sapphire.domain.repository.UserRepository;
 import com.brihaspathee.sapphire.mapper.interfaces.UserMapper;
-import com.brihaspathee.sapphire.model.UserDto;
 import com.brihaspathee.sapphire.model.UserList;
 import com.brihaspathee.sapphire.services.interfaces.UserService;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Created in Intellij IDEA

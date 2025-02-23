@@ -1,7 +1,7 @@
 package com.brihaspathee.sapphire.mapper.interfaces;
 
 import com.brihaspathee.sapphire.domain.entity.Role;
-import com.brihaspathee.sapphire.model.RoleDto;
+import com.brihaspathee.sapphire.dto.auth.RoleDto;
 
 import java.util.Set;
 

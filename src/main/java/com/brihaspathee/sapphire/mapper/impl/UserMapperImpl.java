@@ -2,10 +2,10 @@ package com.brihaspathee.sapphire.mapper.impl;
 
 import com.brihaspathee.sapphire.domain.entity.Role;
 import com.brihaspathee.sapphire.domain.entity.User;
+import com.brihaspathee.sapphire.dto.auth.RoleDto;
+import com.brihaspathee.sapphire.dto.auth.UserDto;
 import com.brihaspathee.sapphire.mapper.interfaces.RoleMapper;
 import com.brihaspathee.sapphire.mapper.interfaces.UserMapper;
-import com.brihaspathee.sapphire.model.RoleDto;
-import com.brihaspathee.sapphire.model.UserDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -46,6 +46,8 @@ public class UserMapperImpl implements UserMapper {
                 .userId(user.getUserId())
                 .username(user.getUsername())
                 .password(user.getPassword())
+                .accountType(user.getAccountType())
+                .serviceId(user.getServiceId())
                 .build();
         if(user.getRoles() != null && !user.getRoles().isEmpty()) {
             Set<Role> roles = user.getRoles();
@@ -69,6 +71,8 @@ public class UserMapperImpl implements UserMapper {
                 .userId(userDto.getUserId())
                 .username(userDto.getUsername())
                 .password(userDto.getPassword())
+                .accountType(userDto.getAccountType())
+                .serviceId(userDto.getServiceId())
                 .build();
         if(userDto.getRoles() != null && !userDto.getRoles().isEmpty()) {
             Set<RoleDto> roleDtos = userDto.getRoles();

@@ -1,7 +1,7 @@
 package com.brihaspathee.sapphire.mapper.interfaces;
 
 import com.brihaspathee.sapphire.domain.entity.Authority;
-import com.brihaspathee.sapphire.model.AuthorityDto;
+import com.brihaspathee.sapphire.dto.auth.AuthorityDto;
 
 import java.util.Set;
 
