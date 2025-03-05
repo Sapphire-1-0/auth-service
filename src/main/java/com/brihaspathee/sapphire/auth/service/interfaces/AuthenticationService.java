@@ -1,6 +1,8 @@
 package com.brihaspathee.sapphire.auth.service.interfaces;
 
+import com.brihaspathee.sapphire.dto.auth.AuthorizationRequest;
 import com.brihaspathee.sapphire.dto.auth.UserDto;
+import org.springframework.security.core.userdetails.UserDetails;
 
 /**
  * Created in Intellij IDEA
@@ -14,10 +16,12 @@ import com.brihaspathee.sapphire.dto.auth.UserDto;
 public interface AuthenticationService {
 
     /**
-     * Validates the provided token and returns the corresponding user details.
+     * Validates whether a user has the necessary access to a specified resource.
      *
-     * @param token the token to be validated
-     * @return the details of the user associated with the token
+     * @param userDetails the details of the user requesting access, containing user-specific information
+     * @param authorizationRequest the information about the resource being accessed, including its URI
+     * @return a UserDto object containing user details, including roles and access rights, if the user has valid access
      */
-    UserDto validateToken(String token);
+    UserDto validateResourceAccess(UserDetails userDetails,
+                          AuthorizationRequest authorizationRequest);
 }

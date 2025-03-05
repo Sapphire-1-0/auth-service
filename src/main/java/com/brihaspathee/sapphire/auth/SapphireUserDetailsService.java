@@ -43,6 +43,7 @@ public class SapphireUserDetailsService implements UserDetailsService {
             return new UserNotFoundException("User with username " + username + " not found");
         });
         log.info("Logged in user {}", user.getUsername());
+        log.info("Logged in user's roles {}", user.getAuthorities());
         return user;
     }
 }

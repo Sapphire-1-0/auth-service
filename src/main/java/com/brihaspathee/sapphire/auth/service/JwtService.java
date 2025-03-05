@@ -63,6 +63,7 @@ public class JwtService {
                 .stream()
                 .map(GrantedAuthority::getAuthority)
                 .toList();
+        log.info("Authorities in JWT token: {}", authorities);
 //        Map<String, Object> claims = Map.of("authorities", authorities);
         return Jwts.builder()
                 .setSubject(user.getUsername())

@@ -2,14 +2,25 @@ package com.brihaspathee.sapphire.auth.service.impl;
 
 import com.brihaspathee.sapphire.auth.service.JwtService;
 import com.brihaspathee.sapphire.auth.service.interfaces.AuthenticationService;
+import com.brihaspathee.sapphire.domain.entity.Authority;
 import com.brihaspathee.sapphire.domain.entity.User;
 import com.brihaspathee.sapphire.domain.repository.UserRepository;
+import com.brihaspathee.sapphire.dto.auth.AuthorityDto;
+import com.brihaspathee.sapphire.dto.auth.AuthorizationRequest;
 import com.brihaspathee.sapphire.dto.auth.UserDto;
+import com.brihaspathee.sapphire.exception.AccessDeniedException;
 import com.brihaspathee.sapphire.mapper.interfaces.UserMapper;
+import com.brihaspathee.sapphire.model.ResourceDto;
+import com.brihaspathee.sapphire.services.interfaces.ResourceManagementService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created in Intellij IDEA
@@ -50,30 +61,61 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserMapper userMapper;
 
     /**
-     * Validates the provided JWT token, extracts the username, retrieves user details,
-     * and maps them to a UserDto object if valid.
+     * Represents a service instance used for managing resources within the application.
+     * Provides functionality to handle operations related to resource allocation,
+     * permissions, and accessibility based on user roles and configurations.
+     * This service acts as a part of the application's core to ensure proper
+     * resource management and security.
+     */
+    private final ResourceManagementService resourceManagementService;
+
+    /**
+     * Validates if a user has the necessary permissions to access a specified resource.
      *
-     * @param token The JWT token to be validated.
-     * @return A UserDto object containing the details of the authenticated user.
-     * @throws BadCredentialsException if the username cannot be extracted, the user is not found,
-     * or the token is invalid.
+     * @param userDetails the details of the user attempting to access the resource, including their authorities
+     * @param authorizationRequest the request detailing the resource URI the user wants to access
+     * @return a UserDto object containing the username of the authorized user
+     * @throws AccessDeniedException if the user does not have permission to access the resource
      */
     @Override
-    public UserDto validateToken(String token) {
-        log.info("Validating the token");
-        Long userId = jwtService.extractUserId(token);
-        log.info("Extracted userId: {}", userId);
-        if(userId == null) {
-            throw new BadCredentialsException("Unable to extract username from the token");
+    public UserDto validateResourceAccess(UserDetails userDetails, AuthorizationRequest authorizationRequest) {
+        List<String> userAuthorities = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
+        log.info("User authorities: {}", userAuthorities);
+        ResourceDto resourceDto = resourceManagementService.getResource(authorizationRequest.getResourceUri());
+        List<String> resourceAuthorities = resourceDto.getAuthorities().stream().map(AuthorityDto::getPermission).toList();
+        log.info("Resource authorities: {}", resourceAuthorities);
+        if(!isUserAuthorized(resourceAuthorities, userAuthorities)) {
+            throw new AccessDeniedException("User is not authorized to access the resource");
         }
-        User user = userRepository.findById(userId).orElse(null);
-        if(user == null) {
-            throw new BadCredentialsException("User not found");
+        if(userDetails instanceof User user) {
+            log.info("User: {}", user);
+            log.info("User's Authorities: {}", user.getAuthorities());
+            log.info("User's username: {}", user.getUsername());
+            log.info("User's serviceId: {}", user.getServiceId());
+            log.info("User's account type: {}", user.getAccountType());
+            return userMapper.toUserDto(user);
         }
-        if(jwtService.validateToken(token, user)) {
-           return userMapper.toUserDto(user);
-        }else{
-            throw new BadCredentialsException("Invalid token");
-        }
+        return UserDto.builder().username(userDetails.getUsername()).build();
+    }
+
+    /**
+     * Checks if a user is authorized to access a resource based on the authorities assigned
+     * to the resource and the user.
+     *
+     * - `Collections.disjoint` is a utility method from Java's `Collections` framework that checks whether two
+     *    collections have no elements in common.
+     *     - If the collections are **disjoint** (i.e., have no common elements), it returns `true`.
+     *     - If they **do** share common elements, it returns `false`.
+     *
+     * - This method uses the negation operator (`!`) with `Collections.disjoint`. So:
+     *     - If the collections are **NOT disjoint** (i.e., they have common elements), the method returns `true`, meaning the user is authorized.
+     *     - If the collections are disjoint (i.e., **no common elements**), the method returns `false`, meaning the user is not authorized.
+     *
+     * @param resourceAuthorities the list of authorities required to access the resource.
+     * @param userAuthorities the list of authorities assigned to the user.
+     * @return true if the user is authorized to access the resource, false otherwise.
+     */
+    private boolean isUserAuthorized(List<String> resourceAuthorities, List<String> userAuthorities) {
+        return !Collections.disjoint(resourceAuthorities, userAuthorities);
     }
 }

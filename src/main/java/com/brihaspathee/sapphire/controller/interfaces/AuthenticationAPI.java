@@ -1,5 +1,6 @@
 package com.brihaspathee.sapphire.controller.interfaces;
 
+import com.brihaspathee.sapphire.dto.auth.AuthorizationRequest;
 import com.brihaspathee.sapphire.dto.auth.UserDto;
 import com.brihaspathee.sapphire.model.AuthenticationRequest;
 import com.brihaspathee.sapphire.model.AuthenticationResponse;
@@ -34,16 +35,4 @@ public interface AuthenticationAPI {
                                                                              @RequestBody
                                                                              AuthenticationRequest
                                                                                      authenticationRequest);
-
-    /**
-     * Validates the given token to check its authenticity and validity.
-     * If the token is valid, the associated user's details are returned.
-     *
-     * @param token the token to be validated
-     * @return a ResponseEntity containing a SapphireAPIResponse object with a UserDto
-     *         representing the details of the authenticated user if the token is valid,
-     *         or an appropriate error response otherwise
-     */
-    @GetMapping("/validate")
-    ResponseEntity<SapphireAPIResponse<UserDto>> validateToken(@RequestParam(name = "token") String token);
 }

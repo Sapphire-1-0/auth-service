@@ -93,8 +93,7 @@ public class SapphireAuthenticationFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.sapphireUserDetailsService.loadUserByUsername(username);
             log.info("User {} authenticated successfully", username);
-            if(userDetails instanceof User){
-                User user = (User) userDetails;
+            if(userDetails instanceof User user){
                 /*
                     once the user is retrieved from the database, check if the jwt token in the
                     request is valid
@@ -110,6 +109,7 @@ public class SapphireAuthenticationFilter extends OncePerRequestFilter {
                         4. Set the authentication token in the Security context
                      */
                     List<SimpleGrantedAuthority> authorities = jwtService.extractAuthorities(jwt);
+                    log.info("Authorities in authentication filter: {}", authorities);
                     UsernamePasswordAuthenticationToken authenticationToken =
                             new UsernamePasswordAuthenticationToken(user, null,
                                     authorities);

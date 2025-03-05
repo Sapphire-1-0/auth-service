@@ -22,6 +22,16 @@ public interface UserRepository extends Neo4jRepository<User, Long> {
      * @param username - the username of the user to be found
      * @return - return the user if present
      */
-    @Query("MATCH (u:User) WHERE u.username = $username RETURN u")
+    @Query("MATCH (u:User)-[hr:HAS_ROLE]->(role:Role)-[ha:HAS_AUTHORITY]->(a:Authority)" +
+            "            WHERE u.username = $username" +
+            "            RETURN u, COLLECT (DISTINCT hr) AS has_role, COLLECT (DISTINCT ha) AS has_authority, COLLECT(DISTINCT role) AS roles, COLLECT(DISTINCT a) AS authorities")
     Optional<User> findByUsername(String username);
+
+    /**
+     * Retrieves a user by their username.
+     *
+     * @param username - the username of the user to be retrieved
+     * @return an {@code Optional} containing the user if found, or an empty {@code Optional} if not found
+     */
+    Optional<User> findUserByUsername(String username);
 }

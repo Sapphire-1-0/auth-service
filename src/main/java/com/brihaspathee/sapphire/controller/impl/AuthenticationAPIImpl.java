@@ -5,10 +5,12 @@ import com.brihaspathee.sapphire.auth.service.JwtService;
 import com.brihaspathee.sapphire.auth.service.interfaces.AuthenticationService;
 import com.brihaspathee.sapphire.controller.interfaces.AuthenticationAPI;
 import com.brihaspathee.sapphire.domain.entity.User;
+import com.brihaspathee.sapphire.dto.auth.AuthorizationRequest;
 import com.brihaspathee.sapphire.dto.auth.UserDto;
 import com.brihaspathee.sapphire.model.AuthenticationRequest;
 import com.brihaspathee.sapphire.model.AuthenticationResponse;
 import com.brihaspathee.sapphire.web.response.SapphireAPIResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -16,7 +18,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
@@ -50,13 +55,6 @@ public class AuthenticationAPIImpl implements AuthenticationAPI {
     private final SapphireUserDetailsService sapphireUserDetailsService;
 
     /**
-     * Provides authentication-related services such as handling user authentication
-     * and validation. Responsible for coordinating the authentication flow and ensuring
-     * proper access control by managing user credentials and authentication tokens.
-     */
-    private final AuthenticationService authenticationService;
-
-    /**
      * Provides functionality for generating and validating JWT tokens.
      * This service is used to create access tokens for authenticated users and
      * to validate token authenticity during secure operations.
@@ -75,17 +73,18 @@ public class AuthenticationAPIImpl implements AuthenticationAPI {
      */
     @Override
     public ResponseEntity<SapphireAPIResponse<AuthenticationResponse>> authenticate(AuthenticationRequest authenticationRequest) {
+        UserDetails userDetails = null;
         try{
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                     authenticationRequest.getUsername(),
                     authenticationRequest.getPassword()));
+            /*
+                Once the user is authenticated, get the user details from the authentication object
+             */
+            userDetails = (UserDetails) authentication.getPrincipal();
         }catch (BadCredentialsException e){
             throw new BadCredentialsException("Invalid credentials");
         }
-        /*
-        * Once the user is authenticated, get the user details from the database
-        */
-        UserDetails userDetails = sapphireUserDetailsService.loadUserByUsername(authenticationRequest.getUsername());
         if(userDetails instanceof User){
             /*
               once the user is retrieved, generate the access token (jwt) using the details of the user
@@ -110,29 +109,6 @@ public class AuthenticationAPIImpl implements AuthenticationAPI {
         }else{
             throw new RuntimeException("User not found");
         }
-    }
-
-    /**
-     * Validates the provided JWT token and returns information about the associated user.
-     *
-     * @param token the JWT token that needs to be validated
-     * @return a ResponseEntity containing a SapphireAPIResponse object with a UserDto,
-     *         which represents the details of the user associated with the validated token
-     */
-    @Override
-    public ResponseEntity<SapphireAPIResponse<UserDto>> validateToken(String token) {
-        log.info("Validating the token");
-        UserDto userDto = authenticationService.validateToken(token);
-        SapphireAPIResponse<UserDto> response = SapphireAPIResponse.<UserDto>builder()
-                .response(userDto)
-                .timestamp(LocalDateTime.now())
-                .status(HttpStatus.OK)
-                .reason("Token Validation Success")
-                .message("Token Successfully validated")
-                .developerMessage("Token Successfully validated")
-                .statusCode(HttpStatus.OK.value())
-                .build();
-        return ResponseEntity.ok(response);
     }
 
 }

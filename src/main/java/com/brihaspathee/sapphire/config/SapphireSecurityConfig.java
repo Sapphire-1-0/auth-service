@@ -1,5 +1,6 @@
 package com.brihaspathee.sapphire.config;
 
+import com.brihaspathee.sapphire.auth.SapphireAuthenticationEntryPoint;
 import com.brihaspathee.sapphire.auth.SapphireUserDetailsService;
 import com.brihaspathee.sapphire.auth.filter.SapphireAuthenticationFilter;
 import lombok.AllArgsConstructor;
@@ -107,6 +108,8 @@ public class SapphireSecurityConfig {
 //                .userDetailsService(sapphireUserDetailsService);
 //                .httpBasic(Customizer.withDefaults());
         http.addFilterBefore(sapphireAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        http.exceptionHandling(exception ->
+                exception.authenticationEntryPoint(new SapphireAuthenticationEntryPoint()));
         return http.build();
     }
 
