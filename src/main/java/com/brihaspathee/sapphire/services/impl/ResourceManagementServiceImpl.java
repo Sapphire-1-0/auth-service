@@ -3,6 +3,7 @@ package com.brihaspathee.sapphire.services.impl;
 import com.brihaspathee.sapphire.domain.entity.Resource;
 import com.brihaspathee.sapphire.domain.repository.ResourceRepository;
 import com.brihaspathee.sapphire.dto.auth.AuthorityDto;
+import com.brihaspathee.sapphire.dto.resource.DomainRegistrationRequest;
 import com.brihaspathee.sapphire.dto.resource.ResourceRegistrationRequest;
 import com.brihaspathee.sapphire.exception.ResourceNotRegisteredException;
 import com.brihaspathee.sapphire.mapper.interfaces.AuthorityMapper;
@@ -36,6 +37,11 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     private final ResourceRepository resourceRepository;
 
     private final AuthorityMapper authorityMapper;
+
+    @Override
+    public void createDomain(DomainRegistrationRequest domainRegistrationRequest) {
+
+    }
 
     /**
      * Creates a new resource based on the provided registration request.

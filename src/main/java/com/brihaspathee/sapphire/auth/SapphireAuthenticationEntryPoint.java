@@ -55,6 +55,7 @@ public class SapphireAuthenticationEntryPoint implements AuthenticationEntryPoin
                          AuthenticationException authException) throws IOException,
             ServletException {
         Throwable cause = authException.getCause();
+        log.info("Request URL: {}", request.getRequestURL());
         log.info("Inside the authentication entry point:{}", authException.getMessage(), authException);
 
         if(authException instanceof BadCredentialsException){

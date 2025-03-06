@@ -1,0 +1,445 @@
+openapi: 3.1.0
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+- url: http://localhost:8080
+  description: Generated server url
+paths:
+  /api/v1/sapphire/auth/resource:
+    post:
+      tags:
+      - resource
+      description: Register the resource with appropriate permissions
+      operationId: registerResource
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResourceRegistrationRequest"
+        required: true
+      responses:
+        "201":
+          description: Successfully registered the resource
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResourceRegistrationResponse"
+  /api/v1/sapphire/auth/resource/validate:
+    post:
+      tags:
+      - resource
+      description: "Get the User DTO if the user has access to the resource, else\
+        \ returns access forbidden"
+      operationId: validateResourceAccess
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthorizationRequest"
+        required: true
+      responses:
+        "200":
+          description: Successfully authorized the user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDto"
+  /api/v1/sapphire/auth/resource/permission:
+    post:
+      tags:
+      - resource
+      description: Get the permission associated with the resource
+      operationId: getPermission
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        required: true
+      responses:
+        "200":
+          description: Successfully retrieved the permission
+          content:
+            application/json:
+              schema:
+                type: string
+  /api/v1/sapphire/auth/public/authenticate:
+    post:
+      tags:
+      - authentication-api-impl
+      operationId: authenticate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthenticationRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/SapphireAPIResponseAuthenticationResponse"
+  /api/v1/sapphire/auth/user:
+    get:
+      tags:
+      - security
+      description: Get all the users in the system
+      operationId: getAllUsers
+      responses:
+        "200":
+          description: Successfully retrieved all the users
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserList"
+  /api/v1/sapphire/auth/public/welcome:
+    get:
+      tags:
+      - welcome-api-impl
+      operationId: getWelcomeMessage
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/SapphireAPIResponseWelcomeDto"
+components:
+  schemas:
+    ResourceRegistrationRequest:
+      type: object
+      properties:
+        resourceURI:
+          type: string
+          description: Resource URI that needs to be registered
+          example: /api/v1/sapphire/member
+        resourceName:
+          type: string
+          description: The name of the resource
+          example: GET_ALL_ACCOUNTS
+        resourceDescription:
+          type: string
+          description: A short description for the resource
+          example: Get all accounts in the system
+        resourceType:
+          type: string
+          description: The type of the resource being registered
+          example: ACCOUNT
+        resourceOwner:
+          type: string
+          description: The name of the service that owns the resource
+          example: MEMBER_MANAGEMENT
+        permission:
+          type: string
+          description: The permission that the user should have to access the resource
+          example: account.read
+      required:
+      - permission
+      - resourceDescription
+      - resourceName
+      - resourceOwner
+      - resourceType
+      - resourceURI
+    ResourceRegistrationResponse:
+      type: object
+      properties:
+        resourceId:
+          type: string
+          description: Id of the resource that was registered
+          example: RES-523GSFG35
+          readOnly: true
+        registrationResponse:
+          type: string
+          description: The response once the resource has been registered
+          example: SUCCESSFULLY_REGISTERED
+          readOnly: true
+    AuthorizationRequest:
+      type: object
+      properties:
+        resourceUri:
+          type: string
+    AuthorityDto:
+      type: object
+      properties:
+        authorityId:
+          type: integer
+          format: int64
+          description: The unique id of the role
+          example: 1001
+          readOnly: true
+        permission:
+          type: string
+          description: The permission
+          example: product.read
+      required:
+      - permission
+    RoleDto:
+      type: object
+      properties:
+        roleId:
+          type: integer
+          format: int64
+          description: The unique id of the role
+          example: 1001
+          readOnly: true
+        roleName:
+          type: string
+          description: The name of the role
+          example: admin
+        authorities:
+          type: array
+          items:
+            $ref: "#/components/schemas/AuthorityDto"
+          uniqueItems: true
+      required:
+      - roleName
+    UserDto:
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int64
+          description: User id of the user
+          example: 1001
+          readOnly: true
+        username:
+          type: string
+          description: The username of the user
+          example: johndoe
+        password:
+          type: string
+          description: The password of the user
+          example: $sef2s4%%@%%#@#
+        serviceId:
+          type: string
+          description: The service id of the user
+          example: SP223806
+        accountType:
+          type: string
+          description: The type of account of the user
+          example: user
+        roles:
+          type: array
+          description: The roles that are associated with the user
+          items:
+            $ref: "#/components/schemas/RoleDto"
+          uniqueItems: true
+      required:
+      - accountType
+      - password
+      - roles
+      - serviceId
+      - username
+    AuthenticationRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          maxLength: 50
+          minLength: 3
+        password:
+          type: string
+          maxLength: 100
+          minLength: 6
+      required:
+      - password
+      - username
+    AuthenticationResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+    SapphireAPIResponseAuthenticationResponse:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        statusCode:
+          type: integer
+          format: int32
+        status:
+          type: string
+          enum:
+          - 100 CONTINUE
+          - 101 SWITCHING_PROTOCOLS
+          - 102 PROCESSING
+          - 103 EARLY_HINTS
+          - 103 CHECKPOINT
+          - 200 OK
+          - 201 CREATED
+          - 202 ACCEPTED
+          - 203 NON_AUTHORITATIVE_INFORMATION
+          - 204 NO_CONTENT
+          - 205 RESET_CONTENT
+          - 206 PARTIAL_CONTENT
+          - 207 MULTI_STATUS
+          - 208 ALREADY_REPORTED
+          - 226 IM_USED
+          - 300 MULTIPLE_CHOICES
+          - 301 MOVED_PERMANENTLY
+          - 302 FOUND
+          - 302 MOVED_TEMPORARILY
+          - 303 SEE_OTHER
+          - 304 NOT_MODIFIED
+          - 305 USE_PROXY
+          - 307 TEMPORARY_REDIRECT
+          - 308 PERMANENT_REDIRECT
+          - 400 BAD_REQUEST
+          - 401 UNAUTHORIZED
+          - 402 PAYMENT_REQUIRED
+          - 403 FORBIDDEN
+          - 404 NOT_FOUND
+          - 405 METHOD_NOT_ALLOWED
+          - 406 NOT_ACCEPTABLE
+          - 407 PROXY_AUTHENTICATION_REQUIRED
+          - 408 REQUEST_TIMEOUT
+          - 409 CONFLICT
+          - 410 GONE
+          - 411 LENGTH_REQUIRED
+          - 412 PRECONDITION_FAILED
+          - 413 PAYLOAD_TOO_LARGE
+          - 413 REQUEST_ENTITY_TOO_LARGE
+          - 414 URI_TOO_LONG
+          - 414 REQUEST_URI_TOO_LONG
+          - 415 UNSUPPORTED_MEDIA_TYPE
+          - 416 REQUESTED_RANGE_NOT_SATISFIABLE
+          - 417 EXPECTATION_FAILED
+          - 418 I_AM_A_TEAPOT
+          - 419 INSUFFICIENT_SPACE_ON_RESOURCE
+          - 420 METHOD_FAILURE
+          - 421 DESTINATION_LOCKED
+          - 422 UNPROCESSABLE_ENTITY
+          - 423 LOCKED
+          - 424 FAILED_DEPENDENCY
+          - 425 TOO_EARLY
+          - 426 UPGRADE_REQUIRED
+          - 428 PRECONDITION_REQUIRED
+          - 429 TOO_MANY_REQUESTS
+          - 431 REQUEST_HEADER_FIELDS_TOO_LARGE
+          - 451 UNAVAILABLE_FOR_LEGAL_REASONS
+          - 500 INTERNAL_SERVER_ERROR
+          - 501 NOT_IMPLEMENTED
+          - 502 BAD_GATEWAY
+          - 503 SERVICE_UNAVAILABLE
+          - 504 GATEWAY_TIMEOUT
+          - 505 HTTP_VERSION_NOT_SUPPORTED
+          - 506 VARIANT_ALSO_NEGOTIATES
+          - 507 INSUFFICIENT_STORAGE
+          - 508 LOOP_DETECTED
+          - 509 BANDWIDTH_LIMIT_EXCEEDED
+          - 510 NOT_EXTENDED
+          - 511 NETWORK_AUTHENTICATION_REQUIRED
+        reason:
+          type: string
+        message:
+          type: string
+        developerMessage:
+          type: string
+        response:
+          $ref: "#/components/schemas/AuthenticationResponse"
+    UserList:
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserDto"
+          uniqueItems: true
+    SapphireAPIResponseWelcomeDto:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        statusCode:
+          type: integer
+          format: int32
+        status:
+          type: string
+          enum:
+          - 100 CONTINUE
+          - 101 SWITCHING_PROTOCOLS
+          - 102 PROCESSING
+          - 103 EARLY_HINTS
+          - 103 CHECKPOINT
+          - 200 OK
+          - 201 CREATED
+          - 202 ACCEPTED
+          - 203 NON_AUTHORITATIVE_INFORMATION
+          - 204 NO_CONTENT
+          - 205 RESET_CONTENT
+          - 206 PARTIAL_CONTENT
+          - 207 MULTI_STATUS
+          - 208 ALREADY_REPORTED
+          - 226 IM_USED
+          - 300 MULTIPLE_CHOICES
+          - 301 MOVED_PERMANENTLY
+          - 302 FOUND
+          - 302 MOVED_TEMPORARILY
+          - 303 SEE_OTHER
+          - 304 NOT_MODIFIED
+          - 305 USE_PROXY
+          - 307 TEMPORARY_REDIRECT
+          - 308 PERMANENT_REDIRECT
+          - 400 BAD_REQUEST
+          - 401 UNAUTHORIZED
+          - 402 PAYMENT_REQUIRED
+          - 403 FORBIDDEN
+          - 404 NOT_FOUND
+          - 405 METHOD_NOT_ALLOWED
+          - 406 NOT_ACCEPTABLE
+          - 407 PROXY_AUTHENTICATION_REQUIRED
+          - 408 REQUEST_TIMEOUT
+          - 409 CONFLICT
+          - 410 GONE
+          - 411 LENGTH_REQUIRED
+          - 412 PRECONDITION_FAILED
+          - 413 PAYLOAD_TOO_LARGE
+          - 413 REQUEST_ENTITY_TOO_LARGE
+          - 414 URI_TOO_LONG
+          - 414 REQUEST_URI_TOO_LONG
+          - 415 UNSUPPORTED_MEDIA_TYPE
+          - 416 REQUESTED_RANGE_NOT_SATISFIABLE
+          - 417 EXPECTATION_FAILED
+          - 418 I_AM_A_TEAPOT
+          - 419 INSUFFICIENT_SPACE_ON_RESOURCE
+          - 420 METHOD_FAILURE
+          - 421 DESTINATION_LOCKED
+          - 422 UNPROCESSABLE_ENTITY
+          - 423 LOCKED
+          - 424 FAILED_DEPENDENCY
+          - 425 TOO_EARLY
+          - 426 UPGRADE_REQUIRED
+          - 428 PRECONDITION_REQUIRED
+          - 429 TOO_MANY_REQUESTS
+          - 431 REQUEST_HEADER_FIELDS_TOO_LARGE
+          - 451 UNAVAILABLE_FOR_LEGAL_REASONS
+          - 500 INTERNAL_SERVER_ERROR
+          - 501 NOT_IMPLEMENTED
+          - 502 BAD_GATEWAY
+          - 503 SERVICE_UNAVAILABLE
+          - 504 GATEWAY_TIMEOUT
+          - 505 HTTP_VERSION_NOT_SUPPORTED
+          - 506 VARIANT_ALSO_NEGOTIATES
+          - 507 INSUFFICIENT_STORAGE
+          - 508 LOOP_DETECTED
+          - 509 BANDWIDTH_LIMIT_EXCEEDED
+          - 510 NOT_EXTENDED
+          - 511 NETWORK_AUTHENTICATION_REQUIRED
+        reason:
+          type: string
+        message:
+          type: string
+        developerMessage:
+          type: string
+        response:
+          $ref: "#/components/schemas/WelcomeDto"
+    WelcomeDto:
+      type: object
+      properties:
+        welcomeMessage:
+          type: string

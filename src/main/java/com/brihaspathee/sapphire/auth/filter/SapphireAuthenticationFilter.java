@@ -65,7 +65,7 @@ public class SapphireAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
-        log.info("Filtering the incoming request");
+        log.info("Filtering the incoming request:{}", request.getRequestURI());
         /*
             Get the authorization header
          */
