@@ -78,6 +78,7 @@ public class SapphireSecurityConfig {
             "/swagger-ui.html",
             "/v3/api-docs.yaml",
             "/api/v1/sapphire/auth/public/**",
+            "/actuator/health"
             // other public endpoints of your API may be appended to this array
 //            "/sapphire/jwt/authenticate",
 //            "/api/v1/sapphire/welcome",

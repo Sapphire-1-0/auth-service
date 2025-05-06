@@ -2,7 +2,11 @@ spring:
   application:
     name: auth-service
   config:
-    import: optional:configserver:http://localhost:7090
+    import: optional:configserver:${CONFIG_SERVER_URL}
+logging:
+  level:
+    org.springframework.data.mongodb: DEBUG
+    org.mongodb.driver: DEBUG
 #  security:
 #    user:
 #      name: balaji

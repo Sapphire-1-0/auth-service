@@ -32,3 +32,5 @@ build/
 
 ### VS Code ###
 .vscode/
+### Contains github personal access token to push image ###
+push.sh

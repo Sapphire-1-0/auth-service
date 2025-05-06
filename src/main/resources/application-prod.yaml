@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: auth-service
+  config:
+    import: optional:configserver:${CONFIG_SERVER_URL}
+logging:
+  level:
+    org.springframework.data.mongodb: DEBUG
+    org.mongodb.driver: DEBUG
+#  security:
+#    user:
+#      name: balaji
+#      password: password
+#  neo4j:
+#    uri: bolt://localhost:7688
+#    authentication:
+#      username: neo4j
+#      password: password
+#  data:
+#    neo4j:
+#      database: sapphire-auth
+
