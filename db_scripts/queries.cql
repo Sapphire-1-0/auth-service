@@ -222,3 +222,34 @@ match (u:User{userName:"mary"})
 match (r:Role{roleName:"customer-specialist"})
 create (u)-[:HAS_ROLE]->(r)
 return r, u;
+
+--- Create Resources for Provider Management
+--- Resource - Get all organizations
+MATCH (a:Authority {permission: "provider.read"})
+
+CREATE (r:Resource {
+  resourceId: "RES-743ERT87FG",
+  resourceName: "GET_ALL_PROVIDERS",
+  resourceType: "PROVIDER",
+  resourceURI: "/api/v1/sapphire/provider/private/get-providers",
+  resourceDescription: "Get all providers in the system",
+  resourceOwner: "PROVIDER_MANAGEMENT"
+})
+
+CREATE (r)-[:NEEDS_AUTHORITY]->(a)
+RETURN r, a
+
+--- Resource - Create an Organization
+MATCH (a:Authority {permission: "provider.read"})
+
+CREATE (r:Resource {
+  resourceId: "RES-743ERT87FG",
+  resourceName: "GET_ALL_PROVIDERS",
+  resourceType: "PROVIDER",
+  resourceURI: "/api/v1/sapphire/provider/private/get-providers",
+  resourceDescription: "Get all providers in the system",
+  resourceOwner: "PROVIDER_MANAGEMENT"
+})
+
+CREATE (r)-[:NEEDS_AUTHORITY]->(a)
+RETURN r, a
